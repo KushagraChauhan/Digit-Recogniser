@@ -1,1 +1,3 @@
-## **under progress** 
+## Digit Recogniser
+
+**under progress**

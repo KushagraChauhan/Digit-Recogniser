@@ -3,7 +3,7 @@
 
 # #### Import the packages required
 
-# In[9]:
+# In[18]:
 
 
 import numpy as np  #for the mathematical operations
@@ -50,7 +50,7 @@ from subprocess import check_output
 # 
 # 
 
-# In[10]:
+# In[19]:
 
 
 train = pd.read_csv("../data/digit/train.csv")
@@ -58,7 +58,7 @@ train = pd.read_csv("../data/digit/train.csv")
 #train.head()
 
 
-# In[11]:
+# In[20]:
 
 
 test = pd.read_csv("../data/digit/test.csv")
@@ -66,27 +66,27 @@ test = pd.read_csv("../data/digit/test.csv")
 #test.head()
 
 
-# In[12]:
+# In[21]:
 
 
 X_train = (train.iloc[:,1:].values).astype('float32') 
 y_train = train.iloc[:,0].values.astype('int32')
-X_test = (train.iloc[:,1:].values).astype('float32') 
+X_test = test.values.astype('float32') 
 
 
-# In[13]:
+# In[22]:
 
 
 #X_train
 
 
-# In[14]:
+# In[23]:
 
 
 #y_train
 
 
-# In[15]:
+# In[24]:
 
 
 X_train = X_train.reshape(X_train.shape[0],28,28) #covert the dataset (num_images, img_rows, img_cols) format
@@ -100,14 +100,14 @@ for i in range(3,9):
 # 330 - 3 X 3 grid, 0th subplot
 # 
 
-# In[16]:
+# In[25]:
 
 
 X_train = X_train.reshape(X_train.shape[0], 28, 28,1)
 X_train.shape
 
 
-# In[17]:
+# In[26]:
 
 
 X_test = X_test.reshape(X_test.shape[0], 28, 28,1)
@@ -127,7 +127,7 @@ X_test.shape
 # Formula-
 # - z = (x-u)/s, where u = Mean, s = Standard
 
-# In[18]:
+# In[27]:
 
 
 u = X_train.mean().astype(np.float32)
@@ -143,7 +143,7 @@ def standardize(x):
 # 
 # For example, 3 would be [0,0,0,1,0,0,0,0,0,0].
 
-# In[19]:
+# In[28]:
 
 
 from keras.utils.np_utils import to_categorical
@@ -152,7 +152,7 @@ num_classes = y_train.shape[1]
 num_classes
 
 
-# In[20]:
+# In[29]:
 
 
 model = Sequential()
@@ -177,7 +177,7 @@ print(model.output_shape)
 # 4. Softmax
 # 5. Swish
 
-# In[21]:
+# In[30]:
 
 
 model.compile(optimizer=RMSprop(lr=0.001),
@@ -191,7 +191,7 @@ metrics=['accuracy'])
 # 
 # Metrics: to monitor performance of network
 
-# In[22]:
+# In[31]:
 
 
 from keras.preprocessing import image
@@ -202,7 +202,7 @@ gen = image.ImageDataGenerator()
 # A nice video to explain the concepts of cross-validation
 # https://www.youtube.com/watch?v=fSytzGwwBVw
 
-# In[23]:
+# In[32]:
 
 
 X = X_train
@@ -213,11 +213,11 @@ batches = gen.flow(X_train, y_train, batch_size=64)
 val_batches=gen.flow(X_val, y_val, batch_size=64)
 
 
-# In[25]:
+# In[33]:
 
 
-history=model.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=3, 
-                    validation_data=val_batches, validation_steps=val_batches.n)
+#history=model.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=3, 
+                 #   validation_data=val_batches, validation_steps=val_batches.n)
 
 
 # Model.fit - Trains the model for a fixed number of epochs (iterations on a dataset).
@@ -231,33 +231,31 @@ history=model.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs
 # - validation_data: Data on which to evaluate the loss and any model metrics at the end of each epoch.
 # - validation_steps: Only relevant if validation_data is provided and is a generator. Total number of steps (batches of samples) to draw before stopping when performing validation at the end of every epoch.
 
-# In[26]:
+# In[34]:
 
 
-history_dict = history.history
-history_dict.keys()
+#history_dict = history.history
+#history_dict.keys()
 
 
-# In[23]:
+# In[35]:
 
 
-epochs = range(1, len(loss_values) + 1)
-acc_values = history_dict['accuracy']
-val_acc_values = history_dict['val_accuracy']
+# loss_values = history_dict['loss']
+# val_loss_values = history_dict['val_loss']
+# epochs = range(1, len(loss_values) + 1)
+# acc_values = history_dict['accuracy']
+# val_acc_values = history_dict['val_accuracy']
 
-plt.plot(epochs, acc_values, 'bo')
-plt.plot(epochs, val_acc_values, 'b+')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
+# plt.plot(epochs, acc_values, 'bo')
+# plt.plot(epochs, val_acc_values, 'b+')
+# plt.xlabel('Epochs')
+# plt.ylabel('Accuracy')
 
-plt.show()
-
-
-# In[ ]:
+# plt.show()
 
 
-Making a fully connected layer-
-
+# ### Make a fully connected layer-
 
 # In[36]:
 
@@ -274,19 +272,21 @@ def get_fc_model():
     return model
 
 
-# In[33]:
+# In[37]:
 
 
 fc = get_fc_model()
 fc.optimizer = RMSprop(lr=0.01)
 
 
-# In[34]:
+# In[38]:
 
 
-history=fc.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=1, 
-                    validation_data=val_batches, validation_steps=val_batches.n)
+# history=fc.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=1, 
+                   # validation_data=val_batches, validation_steps=val_batches.n)
 
+
+# Trying a new activation function- 'Swish'
 
 # In[39]:
 
@@ -304,7 +304,7 @@ from keras.layers import Activation
 get_custom_objects().update({'swish': Activation(swish)})
 
 
-# In[55]:
+# In[41]:
 
 
 def get_sw_model():
@@ -319,16 +319,59 @@ def get_sw_model():
     return model
 
 
-# In[56]:
+# In[42]:
 
 
 sw = get_sw_model()
 sw.optimizer = RMSprop(lr=0.01)
 
 
-# In[58]:
+# In[ ]:
 
 
-history=sw.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=1, 
+
+
+
+# In[43]:
+
+
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.models import Sequential
+def get_cnn_model():
+    model = Sequential([
+        Lambda(standardize, input_shape=(28,28,1)),
+        Convolution2D(64,(3,3), activation='relu'),
+        Convolution2D(64,(3,3), activation='relu'),
+        MaxPooling2D(),
+        Flatten(),
+        Dense(512, activation='relu'),
+        Dense(10, activation='softmax')
+        ])
+    model.compile(Adam(), loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    return model
+
+
+# In[44]:
+
+
+model= get_cnn_model()
+model.optimizer = RMSprop(lr=0.01)
+
+
+# In[45]:
+
+
+history=model.fit_generator(generator=batches, steps_per_epoch=batches.n, epochs=1, 
                     validation_data=val_batches, validation_steps=val_batches.n)
+
+
+# In[48]:
+
+
+predictions = model.predict_classes(X_test, verbose=0)
+
+submissions=pd.DataFrame({"ImageId": list(range(1,len(predictions)+1)),
+                         "Label": predictions})
+submissions.to_csv("CNN.csv", index=False, header=True)
 
